@@ -1,11 +1,12 @@
 #FROM nvidia/cuda:10.0-cudnn7-runtime-centos7
 FROM nvidia/cuda:10.0-cudnn7-devel-centos7
 
-WORKDIR /mlperf
 
 ENV CUDA_HOME /usr/local/cuda
 ENV LD_LIBRARY_PATH $LD_LIBRARY_PATH:/usr/local/cuda/lib64:/usr/local/cuda/extras/CUPTI/lib64
 ENV PATH $PATH:$CUDA_HOME/bin
+
+USER 0 
 
 RUN yum install -y centos-release-scl && \
     yum install devtoolset-7 rh-python36 -y
@@ -41,6 +42,7 @@ RUN source scl_source enable rh-python36 devtoolset-7 && \
       torchvision==0.2.2 \
       ninja==1.8.2.post2 
 
+WORKDIR /mlperf
 ADD . /mlperf
 
 # install pycocotools
@@ -56,6 +58,7 @@ RUN source scl_source enable rh-python36 devtoolset-7 && \
     cd pytorch && \
     python setup.py build develop
 
+USER example
 # For information purposes only, these are the versions of the packages which we've successfully used:
 # $ pip list
 # Package              Version           Location
